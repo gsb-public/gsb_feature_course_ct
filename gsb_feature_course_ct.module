@@ -1,7 +1,151 @@
 <?php
 /**
  * @file
- * Code for the GSB Feature Course Content Type feature.
+ * Code for the GSB Feature Course CT feature.
  */
 
 include_once 'gsb_feature_course_ct.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function gsb_feature_course_ct_menu() {
+  $items = array();
+
+  $items['course-import/%'] = array(
+    'title' => 'GSB course.',
+    'description' => 'GSB course.',
+    'page callback' => 'gsb_feature_course_ct_import_subject_all',
+    'page arguments' => array(1),
+    'access arguments' => array('administer nodes'),
+  );
+  return $items;
+}
+
+function gsb_feature_course_ct_cron()
+{
+   gsb_feature_course_ct_import_subject_all();
+}
+
+function gsb_feature_course_ct_import_subject_all($acad_year = NULL) {
+ // $acad_year = '20122013';
+  $subjects = array(
+     'ACCT' => 'ACCT',
+     'MGTECON' => 'MGTECON',
+     'FINANCE' => 'FINANCE',
+     'GSBGEN' => 'GSBGEN',
+     'HRMGT' => 'HRMGT',
+     'MKTG' => 'MKTG',
+     'OIT' => 'OIT',
+     'OB' => 'OB',
+     'POLECON' => 'POLECON',
+     'STRAMGT' => 'STRAMGT',
+  );
+
+    // Create feed importer content for each subject
+  foreach ($subjects as $subject => $value) {
+    gsb_feature_course_ct_import_course($acad_year, $subject);
+  }
+
+ return 'gsb_feature_course_ct_import completed';
+}
+
+function gsb_feature_course_ct_import_course($acad_year = NULL, $subject = 'ACCT') {
+
+  $url = 'http://explorecourses.stanford.edu/search?view=xml-20130925&filter-coursestatus-Active=on&page=0&q='.$subject.'&academicYear='.$acad_year;
+  $xml = simplexml_load_file(rawurlencode($url));
+
+  //$count = 0;
+  if ($xml) {
+    foreach ($xml->courses->course as $course) {
+      // Check if the course exits by comparing year and courseID.
+      gsb_feature_course_ct_course_import($course);
+    //  exit;
+    }
+  }
+}
+
+/*
+  Import courses
+ */
+function gsb_feature_course_ct_course_import($course) {
+    // Split the year field
+    $acad_year = explode('-', $course->year);
+    $start_year = $acad_year[0]."-01-01";
+    $start_date = new DateTime($start_year);
+
+    $end_year = $acad_year[1]."-01-01";
+    $end_date = new DateTime($end_year);
+
+    // Check if the course already exists
+    $query = new EntityFieldQuery();
+
+    $query->entityCondition('entity_type', 'node')
+      ->entityCondition('bundle', 'course')
+      ->fieldCondition('field_course_id', 'value', array($course->administrativeInformation->courseId))
+      ->fieldCondition('field_course_start_acad_year', 'value', array($start_year))
+      ->fieldCondition('field_course_end_acad_year', 'value', array($end_year))->range(0, 1);
+
+    $entities = $query->execute();
+
+    if (!empty($entities['node'])) {
+      $nid = array_keys($entities['node']);
+      $node = node_load(array_shift($nid));
+     // echo 'Course updated';
+    } else {
+       $field_values = array(
+          'type' => 'course',
+          'uid' => 1,
+          'status' => 1,
+          'promote' => 0,
+       );
+       // Create the course
+       $node = entity_create('node', $field_values);
+      // echo 'Course created';
+    }
+    // if the node isn't a course
+    if ($node->type != 'course') {
+      return;
+    }
+
+    // updatet the course node information
+    $wrapper = entity_metadata_wrapper('node', $node);
+    $wrapper->title->set((string)$course->title);
+
+    $wrapper->field_course_id->set((string)$course->administrativeInformation->courseId);
+    $wrapper->field_course_subject->set((string)$course->subject);
+    $wrapper->field_course_code->set((string)$course->code);
+    $wrapper->field_course_start_acad_year->set($start_date->getTimestamp());
+    $wrapper->field_course_end_acad_year->set($end_date->getTimestamp());
+    //$wrapper->field_body->set((string)$course->description); // description input needs to fixed
+
+    $xml_sections = $course->sections;
+    $entity_ids = array();
+
+    // update the faculty node id by sunet
+    foreach ($xml_sections->section as $section) {
+      // update the entity reference for sunet
+      if (!empty($section->schedules->schedule->instructors->instructor->sunet)
+          && trim($section->schedules->schedule->instructors->instructor->sunet) != '') {
+        $sunet_id = $section->schedules->schedule->instructors->instructor->sunet;
+
+        // try to locate the sunet from faculty content
+        $query = db_select('field_data_field_sunetid', 'su');
+        $query->fields('su', array('bundle', 'entity_id', 'field_sunetid_value'));
+        $query->condition('su.field_sunetid_value',$sunet_id, 'IN')->range(0, 1);
+        $result = $query->execute();
+        foreach ($result as $record) {
+          $entity_ids[] = $record->entity_id;
+        }
+      }
+    }
+
+    if (!empty($entity_ids) != '') {
+      $wrapper->field_person_fac_ref->set($entity_ids);
+    } else {
+      $wrapper->field_person_fac_ref = array();
+    }
+
+    // Finally save the entity
+    $wrapper->save();
+}
