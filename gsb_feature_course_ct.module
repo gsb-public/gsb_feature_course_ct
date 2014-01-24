@@ -117,6 +117,10 @@ function gsb_feature_course_ct_course_import($course) {
     $wrapper->field_course_code->set((string)$course->code);
     $wrapper->field_course_start_acad_year->set($start_date->getTimestamp());
     $wrapper->field_course_end_acad_year->set($end_date->getTimestamp());
+    $wrapper->field_body = array(
+       'value' => $course->description,
+       'format' => 'full_html',
+    );
     //$wrapper->field_body->set((string)$course->description); // description input needs to fixed
 
     $xml_sections = $course->sections;
