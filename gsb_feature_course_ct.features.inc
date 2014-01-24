@@ -18,10 +18,10 @@ function gsb_feature_course_ct_ctools_plugin_api($module = NULL, $api = NULL) {
  */
 function gsb_feature_course_ct_node_info() {
   $items = array(
-    'gsb_feature_course_ct' => array(
+    'course' => array(
       'name' => t('Course'),
       'base' => 'node_content',
-      'description' => t('The GSB Public Course content type is used for course on the GSB Public web site.'),
+      'description' => '',
       'has_title' => '1',
       'title_label' => t('Title'),
       'help' => '',
