@@ -134,20 +134,23 @@ function gsb_feature_course_ct_course_import($course) {
         $sunet_id = $section->schedules->schedule->instructors->instructor->sunet;
 
         // try to locate the sunet from faculty content
-        $query = db_select('field_data_field_sunetid', 'su');
-        $query->fields('su', array('bundle', 'entity_id', 'field_sunetid_value'));
-        $query->condition('su.field_sunetid_value',$sunet_id, 'IN')->range(0, 1);
-        $result = $query->execute();
-        foreach ($result as $record) {
-          $entity_ids[] = $record->entity_id;
+        $entity_id = db_select('field_data_field_sunetid', 'su')
+          ->fields('su', array('entity_id'))
+          ->condition('su.field_sunetid_value',$sunet_id)
+          ->condition('su.bundle','faculty')
+          ->execute()->fetchField();
+
+        if ($entity_id && !in_array($entity_id, $entity_ids)) {
+          $entity_ids[] = $entity_id;
         }
       }
     }
 
-    if (!empty($entity_ids) != '') {
+    if (!empty($entity_ids)) {
       $wrapper->field_person_fac_ref->set($entity_ids);
-    } else {
-      $wrapper->field_person_fac_ref = array();
+    }
+    else {
+      $wrapper->field_person_fac_ref->set(NULL);
     }
 
     // Finally save the entity
