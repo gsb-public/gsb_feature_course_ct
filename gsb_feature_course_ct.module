@@ -128,21 +128,22 @@ function gsb_feature_course_ct_course_import($course) {
 
     // update the faculty node id by sunet
     foreach ($xml_sections->section as $section) {
+
       // update the entity reference for sunet
       if (!empty($section->schedules->schedule->instructors->instructor->sunet)
           && trim($section->schedules->schedule->instructors->instructor->sunet) != '') {
-        $sunet_id = $section->schedules->schedule->instructors->instructor->sunet;
 
-        // try to locate the sunet from faculty content
-        $entity_id = db_select('field_data_field_sunetid', 'su')
-          ->fields('su', array('entity_id'))
-          ->condition('su.field_sunetid_value',$sunet_id)
-          ->condition('su.bundle','faculty')
-          ->execute()->fetchField();
-
-        if ($entity_id && !in_array($entity_id, $entity_ids)) {
-          $entity_ids[] = $entity_id;
+        if (count($section->schedules->schedule->instructors->instructor) > 1) {
+          foreach($section->schedules->schedule->instructors->instructor as $instructor) {
+            $sunet_id = $instructor->sunet;
+            $entity_ids = array_replace(_gsb_feature_course_ct_add_faculty($sunet_id), $entity_ids);
+          }
         }
+        else {
+          $sunet_id = $section->schedules->schedule->instructors->instructor->sunet;
+          $entity_ids = array_replace(_gsb_feature_course_ct_add_faculty($sunet_id), $entity_ids);
+        }
+        
       }
     }
 
@@ -155,4 +156,22 @@ function gsb_feature_course_ct_course_import($course) {
 
     // Finally save the entity
     $wrapper->save();
+}
+
+function _gsb_feature_course_ct_add_faculty($sunet_id) {
+
+  $entity_ids = array();
+
+  // try to locate the sunet from faculty content
+  $entity_id = db_select('field_data_field_sunetid', 'su')
+    ->fields('su', array('entity_id'))
+    ->condition('su.field_sunetid_value',$sunet_id)
+    ->condition('su.bundle','faculty')
+    ->execute()->fetchField();
+
+  if ($entity_id && !in_array($entity_id, $entity_ids)) {
+    $entity_ids[$entity_id] = $entity_id;
+  }
+
+  return $entity_ids;
 }
