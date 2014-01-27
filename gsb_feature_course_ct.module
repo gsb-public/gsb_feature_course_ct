@@ -82,9 +82,10 @@ function gsb_feature_course_ct_course_import($course) {
 
     $query->entityCondition('entity_type', 'node')
       ->entityCondition('bundle', 'course')
-      ->fieldCondition('field_course_id', 'value', array($course->administrativeInformation->courseId))
+      ->fieldCondition('field_course_code', 'value', (string)$course->code)
+      ->fieldCondition('field_course_subject', 'value', (string)$course->subject)             
       ->fieldCondition('field_course_start_acad_year', 'value', array($start_year))
-      ->fieldCondition('field_course_end_acad_year', 'value', array($end_year))->range(0, 1);
+      ->fieldCondition('field_course_end_acad_year', 'value', array($end_year));
 
     $entities = $query->execute();
 
@@ -147,13 +148,11 @@ function gsb_feature_course_ct_course_import($course) {
       }
     }
 
-    if (count($xml_sections->section)) {
-      if (!empty($entity_ids)) {
-        $wrapper->field_person_fac_ref->set($entity_ids);
-      }
-      else {
-        $wrapper->field_person_fac_ref->set(NULL);
-      }
+    if (!empty($entity_ids)) {
+      $wrapper->field_person_fac_ref->set($entity_ids);
+    }
+    else {
+      $wrapper->field_person_fac_ref->set(NULL);
     }
 
     // Finally save the entity
