@@ -147,11 +147,13 @@ function gsb_feature_course_ct_course_import($course) {
       }
     }
 
-    if (!empty($entity_ids)) {
-      $wrapper->field_person_fac_ref->set($entity_ids);
-    }
-    else {
-      $wrapper->field_person_fac_ref->set(NULL);
+    if (count($xml_sections->section)) {
+      if (!empty($entity_ids)) {
+        $wrapper->field_person_fac_ref->set($entity_ids);
+      }
+      else {
+        $wrapper->field_person_fac_ref->set(NULL);
+      }
     }
 
     // Finally save the entity
