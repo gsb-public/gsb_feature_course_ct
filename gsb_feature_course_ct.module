@@ -49,13 +49,20 @@ function gsb_feature_course_ct_menu() {
   return $items;
 }
 
+/**
+ * Implements hook_cron().
+ */
 function gsb_feature_course_ct_cron()
 {
    gsb_feature_course_ct_import_subject_all();
 }
 
+/**
+ * Import Courses from the explore courses system for a given 
+ * academic year. Example: $acad_year = '20122013';
+ */
 function gsb_feature_course_ct_import_subject_all($acad_year = NULL) {
- // $acad_year = '20122013';
+
   $subjects = array(
      'ACCT' => 'ACCT',
      'MGTECON' => 'MGTECON',
@@ -77,6 +84,9 @@ function gsb_feature_course_ct_import_subject_all($acad_year = NULL) {
  return 'gsb_feature_course_ct_import completed';
 }
 
+/**
+ * Import Courses from the explore courses system
+ */
 function gsb_feature_course_ct_import_course($acad_year = NULL, $subject = 'ACCT') {
 
   $url = 'http://explorecourses.stanford.edu/search?view=xml-20130925&filter-coursestatus-Active=on&page=0&q='.$subject.'&academicYear='.$acad_year;
@@ -90,8 +100,8 @@ function gsb_feature_course_ct_import_course($acad_year = NULL, $subject = 'ACCT
   }
 }
 
-/*
- * Import courses
+/**
+ * Import a Course
  */
 function gsb_feature_course_ct_course_import($course) {
 
@@ -202,6 +212,9 @@ function gsb_feature_course_ct_course_import($course) {
     $wrapper->save();
 }
 
+/**
+ * Get the faculty entity ids having the given sunetid
+ */
 function _gsb_feature_course_ct_add_faculty($sunet_id) {
 
   $entity_ids = array();
@@ -220,9 +233,13 @@ function _gsb_feature_course_ct_add_faculty($sunet_id) {
   return $entity_ids;
 }
 
-////////////////////////////////////////////////////////////////////////
-// Functions related to Course Filtering 
+/**
+ * Functions related to Course Filtering 
+ */
 
+/**
+ * List all Course Filters in table/operations form 
+ */
 function gsb_feature_course_ct_list_filters($form, &$form_state) {
 
   $form['addlink'] = array(
@@ -311,6 +328,13 @@ function gsb_feature_course_ct_edit_filter($form, $form_state, $subject_code = n
     $form['course_code']['#default_value'] = $code;    
   }
 
+  if ($subject_code != null) {
+    $form['subject_code'] = array(
+      '#type' => 'hidden',
+      '#value' => $subject_code,
+    );       
+  }  
+
   $form['#submit'][] = 'gsb_feature_course_ct_edit_filter_submit';    
 
   return system_settings_form($form, $form_state);
@@ -324,9 +348,9 @@ function gsb_feature_course_ct_edit_filter_submit($form, &$form_state) {
   $subject = $form_state['values']['course_subject'];
   $code = $form_state['values']['course_code'];
 
-  if (!empty($form_state['build_info']['args'])) {
+  if (!empty($form_state['values']['subject_code'])) {
     // get the subject and previous code
-    $subject_code = $form_state['build_info']['args'][0];
+    $subject_code = $form_state['values']['subject_code'];
     list($subject, $old_code) = explode('-',$subject_code);
     // delete the old code
     _gsb_feature_course_ct_delete_filter_code($subject, $old_code);
@@ -361,6 +385,9 @@ function gsb_feature_course_ct_delete_filter_submit($form, &$form_state) {
 
 }  
 
+/**
+ * Add the filter code 
+ */
 function _gsb_feature_course_ct_add_filter_code($subject, $code) {
 
   $course_filters = variable_get('gsb_course_ct_filters', array());
@@ -375,6 +402,9 @@ function _gsb_feature_course_ct_add_filter_code($subject, $code) {
   variable_set('gsb_course_ct_filters', $course_filters);
 }
 
+/**
+ * Delete the filter code 
+ */
 function _gsb_feature_course_ct_delete_filter_code($subject, $code) {
 
   $course_filters = variable_get('gsb_course_ct_filters', array());
@@ -393,6 +423,9 @@ function _gsb_feature_course_ct_delete_filter_code($subject, $code) {
   variable_set('gsb_course_ct_filters', $course_filters);
 }  
 
+/**
+ * Create the basic fields for the edit form
+ */
 function _gsb_feature_course_ct_get_basic_form() {
 
   $form = array();
@@ -428,6 +461,9 @@ function _gsb_feature_course_ct_get_basic_form() {
   return $form;
 }  
 
+/**
+ * Modify the order of the listing 
+ */
 function _gsb_feature_course_ct_move_all_first(&$course_filters) {
 
   // We move the items marked with the 'all' subject to the top 
