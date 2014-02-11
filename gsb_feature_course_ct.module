@@ -310,13 +310,19 @@ function gsb_feature_course_ct_subject_code_load($subject_code = null) {
     // Check if subject is valid
     $subjects = _gsb_feature_course_ct_get_subjects();
     if (!in_array(str_replace('ALL', 'All', $subject),$subjects)) {
+      drupal_set_message(t('Page not found. Subject is invalid.'), 'error', FALSE);
+      drupal_goto($path = 'admin/config/gsb/course-filters');
       return FALSE;
     }    
     // Check if code is valid - 3 digits in length 
     if (!is_numeric($code)) {
+      drupal_set_message(t('Page not found. Code is invalid.'), 'error', FALSE);
+      drupal_goto($path = 'admin/config/gsb/course-filters');      
       return FALSE;
     } 
     else if (strlen($code) != 3)  {
+      drupal_set_message(t('Page not found. Code is invalid.'), 'error', FALSE);
+      drupal_goto($path = 'admin/config/gsb/course-filters');            
       return FALSE;
     }
     return array(
