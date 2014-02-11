@@ -114,7 +114,11 @@ function gsb_feature_course_ct_course_import($course) {
 
     // don't import any courses that are in the filter list
 
-    $course_filters = variable_get('gsb_course_filters', array());
+    $course_filters = _gsb_feature_course_ct_get_course_filters();
+
+    if ($subject == 'ACCT' && $code == '313') {
+      $fred = 'fred';
+    }
 
     if (!empty($course_filters[$subject])) {  
       if (in_array($code, $course_filters[$subject])) {
@@ -252,7 +256,7 @@ function gsb_feature_course_ct_list_filters($form, &$form_state) {
     '#href' => 'admin/config/gsb/course-filters/add',
   );
 
-  $course_filters = variable_get('gsb_course_ct_filters', array());
+  $course_filters = _gsb_feature_course_ct_get_course_filters();
 
   if (!empty($course_filters)) {
 
@@ -461,7 +465,7 @@ function gsb_feature_course_ct_delete_filter_submit($form, &$form_state) {
  */
 function _gsb_feature_course_ct_add_filter_code($subject, $code) {
 
-  $course_filters = variable_get('gsb_course_ct_filters', array());
+  $course_filters = _gsb_feature_course_ct_get_course_filters();
 
   if(!empty($course_filters[$subject])) {
     $course_filters[$subject] = array_unique (array_merge($course_filters[$subject], array($code)));
@@ -470,7 +474,7 @@ function _gsb_feature_course_ct_add_filter_code($subject, $code) {
     $course_filters[$subject] = array($code);
   }
 
-  variable_set('gsb_course_ct_filters', $course_filters);
+  _gsb_feature_course_ct_set_course_filters($course_filters);
 }
 
 /**
@@ -478,7 +482,7 @@ function _gsb_feature_course_ct_add_filter_code($subject, $code) {
  */
 function _gsb_feature_course_ct_delete_filter_code($subject, $code) {
 
-  $course_filters = variable_get('gsb_course_ct_filters', array());
+  $course_filters = _gsb_feature_course_ct_get_course_filters();
 
   if (!empty($course_filters[$subject])) {
     $codes = $course_filters[$subject];
@@ -491,7 +495,7 @@ function _gsb_feature_course_ct_delete_filter_code($subject, $code) {
     $course_filters[$subject] = $codes;
   }
 
-  variable_set('gsb_course_ct_filters', $course_filters);
+  _gsb_feature_course_ct_set_course_filters($course_filters);
 }  
 
 /**
@@ -558,5 +562,14 @@ function _gsb_feature_course_ct_get_subjects() {
   );  
   return $subjects;  
 }
+
+function _gsb_feature_course_ct_get_course_filters() {
+  return variable_get('gsb_course_ct_filters', array());
+}
+
+function _gsb_feature_course_ct_set_course_filters($value) {
+  return variable_set('gsb_course_ct_filters', $value);
+}
+
 
 
