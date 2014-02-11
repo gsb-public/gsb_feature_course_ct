@@ -23,30 +23,41 @@ function gsb_feature_course_ct_menu() {
     'description' => 'Set filters for Course import.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('gsb_feature_course_ct_list_filters'),
-    'access arguments' => array('access administration pages'),
+    'access arguments' => array('administer course filters'),
   );
   $items['admin/config/gsb/course-filters/add'] = array(
     'title' => 'Add',
     'description' => 'Add filter for Courses import.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('gsb_feature_course_ct_edit_filter'),
-    'access arguments' => array('access administration pages'),
+    'access arguments' => array('administer course filters'),
   );  
   $items['admin/config/gsb/course-filters/%gsb_feature_course_ct_subject_code/delete'] = array(
     'title' => 'Delete',
     'description' => 'Delete filter for Courses import.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('gsb_feature_course_ct_delete_filter', 4),
-    'access arguments' => array('access administration pages'),
+    'access arguments' => array('administer course filters'),
   );   
   $items['admin/config/gsb/course-filters/%gsb_feature_course_ct_subject_code/edit'] = array(
     'title' => 'Edit',
     'description' => 'Edit filter for Courses import.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('gsb_feature_course_ct_edit_filter', 4),
-    'access arguments' => array('access administration pages'),
+    'access arguments' => array('administer course filters'),
   );    
   return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function gsb_feature_course_ct_permission() {
+  return array(
+    'administer course filters' => array(
+      'title' => t('Administer course filters'),
+    ),
+  );
 }
 
 /**
