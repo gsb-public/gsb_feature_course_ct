@@ -121,10 +121,6 @@ function gsb_feature_course_ct_course_import($course) {
 
     $course_filters = _gsb_feature_course_ct_get_course_filters();
 
-    if ($subject == 'ACCT' && $code == '313') {
-      $fred = 'fred';
-    }
-
     if (!empty($course_filters[$subject])) {  
       if (in_array($code, $course_filters[$subject])) {
         return;
