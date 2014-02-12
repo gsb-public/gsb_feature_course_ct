@@ -170,42 +170,7 @@ function gsb_feature_course_ct_edit_filter_validate($form, &$form_state) {
   if (!empty($error_message)) {
     form_set_error('course_code', t($error_message));
   }
-    
-  /*
-  // Check if code contains *s 
-  $index = stripos($code,'*');
-  if ($index === FALSE) {
-    // no stars
-  } else {
-    // handle special stars checking
-    $test_code = str_replace('*','',$code);
-    if (strlen($test_code) == 0) {
-      // All stars is not valid
-      form_set_error('course_code', t('Course code for the filter is not valid.'));     
-      return FALSE;      
-    }
-    // Check if code is valid - 3 digits in length
-    if (!is_numeric($test_code)) {
-      // After removing the stars, the remaining chars were not numeric
-      form_set_error('course_code', t('Course code for the filter must be numeric.')); 
-      return FALSE;
-    } 
-    else if (strlen($code) != 3)  {
-      form_set_error('course_code', t('Course code for the filter must be 3 chars in length.'));  
-      return FALSE;
-    }     
-    else {
-      return;
-    }
-  }
-  // Check if code is valid - 3 digits in length 
-  if (!is_numeric($code)) {
-    form_set_error('course_code', t('Course code for the filter must be numeric.'));
-  } 
-  else if (strlen($code) != 3)  {
-    form_set_error('course_code', t('Course code for the filter must be 3 digits in length.'));
-  } 
-  */
+  
 }
 
 /**
