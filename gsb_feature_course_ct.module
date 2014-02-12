@@ -68,9 +68,8 @@ function gsb_feature_course_ct_permission() {
 /**
  * Implements hook_cron().
  */
-function gsb_feature_course_ct_cron()
-{
-   gsb_feature_course_ct_import_subject_all();
+function gsb_feature_course_ct_cron() {
+  gsb_feature_course_ct_import_subject_all();
 }
 
 /**
@@ -145,23 +144,23 @@ function gsb_feature_course_ct_course_import($course) {
     if (!empty($entities['node'])) {
       $nid = array_keys($entities['node']);
       $node = node_load(array_shift($nid));
-     // echo 'Course updated';
-    } else {
-       $field_values = array(
-          'type' => 'course',
-          'uid' => 1,
-          'status' => 1,
-          'promote' => 0,
-       );
-       // Create the course
-       $node = entity_create('node', $field_values);
+    } 
+    else {
+      $field_values = array(
+        'type' => 'course',
+        'uid' => 1,
+        'status' => 1,
+        'promote' => 0,
+      );
+      // Create the course
+      $node = entity_create('node', $field_values);
     }
     // if the node isn't a course
     if ($node->type != 'course') {
       return;
     }
 
-    // updatet the course node information
+    // update the course node information
     $wrapper = entity_metadata_wrapper('node', $node);
     $wrapper->title->set((string)$course->title);
 
@@ -233,7 +232,7 @@ function _gsb_feature_course_ct_add_faculty($sunet_id) {
 }
 
 /**
- * Get the subject and code. 
+ * Check if subject and code should be filtered.
  * Return TRUE if in the list of courses to be filtered out.
  */
 function _gsb_feature_course_ct_check_filter($subject, $code) {
@@ -253,7 +252,7 @@ function _gsb_feature_course_ct_check_filter($subject, $code) {
 
   if (!empty($course_filters['ALL'])) {
     foreach ($course_filters[$subject] as $key => $code) {
-      preg_match('/'. $pattern . '/', $code, $matches);
+      preg_match('/'.$pattern.'/', $code, $matches);
       if ($matches) {
         return TRUE;
       }
