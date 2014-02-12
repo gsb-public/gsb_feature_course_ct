@@ -24,6 +24,7 @@ function gsb_feature_course_ct_subject_code_load($subject_code = null) {
       return FALSE;
     }
     
+    // Check if code is valid
     $error_message = _gsb_feature_course_ct_validate_code($code);
     if (!empty($error_message)) {
       drupal_set_message(t($error_message), 'error', FALSE);
@@ -170,7 +171,7 @@ function gsb_feature_course_ct_edit_filter_validate($form, &$form_state) {
   if (!empty($error_message)) {
     form_set_error('course_code', t($error_message));
   }
-  
+
 }
 
 /**
@@ -193,11 +194,10 @@ function gsb_feature_course_ct_edit_filter_submit($form, &$form_state) {
   _gsb_feature_course_ct_add_filter_code($subject, $code);
 
   $form_state['redirect'] = array('admin/config/gsb/course-filters');
-
 }
 
 /**
- * Delete the Course Filter.
+ * Confirm delete of the Course Filter.
  */                                         
 function gsb_feature_course_ct_delete_filter($form, $form_state, $subject_code = array()) {
 
@@ -214,6 +214,9 @@ function gsb_feature_course_ct_delete_filter($form, $form_state, $subject_code =
   return confirm_form($form, NULL, $destination, $question, t('Delete'), t('Cancel'));
 }  
 
+/**
+ * Delete the Course Filter.
+ */   
 function gsb_feature_course_ct_delete_filter_submit($form, &$form_state) {
 
   if (!empty($form_state['values']['subject_code'])) {
@@ -225,7 +228,6 @@ function gsb_feature_course_ct_delete_filter_submit($form, &$form_state) {
   }
 
   $form_state['redirect'] = array('admin/config/gsb/course-filters');
-
 }  
 
 /**
@@ -235,8 +237,8 @@ function _gsb_feature_course_ct_add_filter_code($subject, $code) {
 
   $course_filters = _gsb_feature_course_ct_get_course_filters();
 
-  if(!empty($course_filters[$subject])) {
-    $course_filters[$subject] = array_unique (array_merge($course_filters[$subject], array($code)));
+  if (!empty($course_filters[$subject])) {
+    $course_filters[$subject] = array_unique(array_merge($course_filters[$subject], array($code)));
   }
   else {
     $course_filters[$subject] = array($code);
