@@ -236,10 +236,6 @@ function _gsb_feature_course_ct_add_faculty($sunet_id) {
  * Return TRUE if in the list of courses to be filtered out.
  */
 function _gsb_feature_course_ct_check_filter($subject, $code) {
-  
-  if ($subject == 'ACCT' && $code == '313') {
-    $fred = 'fred';
-  }
 
   $course_filters = _gsb_feature_course_ct_get_course_filters();
 
