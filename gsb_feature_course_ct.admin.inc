@@ -8,37 +8,41 @@
  * Validate the subject_code argument 
  */
 function gsb_feature_course_ct_subject_code_load($subject_code = null) {
+  
   if ($subject_code != null) {
+    
     $subject = '';
     $code = '';
     list($subject, $code) = explode('-',$subject_code);
+    $code = str_replace('x','*',$code);
+
     // Check if subject is valid
     $subjects = _gsb_feature_course_ct_get_subjects();
     if (!in_array(str_replace('ALL', 'All', $subject),$subjects)) {
-      drupal_set_message(t('Page not found. Subject is invalid.'), 'error', FALSE);
+      drupal_set_message(t('Subject is invalid.'), 'error', FALSE);
       drupal_goto($path = 'admin/config/gsb/course-filters');
       return FALSE;
-    }    
-    // Check if code is valid - 3 digits in length 
-    if (!is_numeric($code)) {
-      drupal_set_message(t('Page not found. Code is invalid.'), 'error', FALSE);
-      drupal_goto($path = 'admin/config/gsb/course-filters');      
-      return FALSE;
-    } 
-    else if (strlen($code) != 3)  {
-      drupal_set_message(t('Page not found. Code is invalid.'), 'error', FALSE);
-      drupal_goto($path = 'admin/config/gsb/course-filters');            
-      return FALSE;
     }
+    
+    $error_message = _gsb_feature_course_ct_validate_code($code);
+    if (!empty($error_message)) {
+      drupal_set_message(t($error_message), 'error', FALSE);
+      drupal_goto($path = 'admin/config/gsb/course-filters');      
+      return FALSE;       
+    }
+
     return array(
       'subject' => $subject,
       'code' => $code,
-    );     
+    ); 
+
   }
+
   return array(
     'subject' => '',
     'code' => '',
-  );  
+  );
+
 }
 
 /**
@@ -67,6 +71,8 @@ function gsb_feature_course_ct_list_filters($form, &$form_state) {
 
       foreach($codes as $code) {
 
+        $link_code = str_replace('*', 'x', $code);
+
         $row = array();
 
         $row['data'][] = $key;
@@ -75,11 +81,11 @@ function gsb_feature_course_ct_list_filters($form, &$form_state) {
         $operations = array();
         $operations['edit'] = array(
           'title' => t('Edit'),
-          'href' => 'admin/config/gsb/course-filters/' . $key .'-' . $code . '/edit',
+          'href' => 'admin/config/gsb/course-filters/' . $key .'-' . $link_code . '/edit',
         );
         $operations['delete'] = array(
           'title' => t('Delete'),
-          'href' => 'admin/config/gsb/course-filters/' . $key .'-' . $code . '/delete',
+          'href' => 'admin/config/gsb/course-filters/' . $key .'-' . $link_code . '/delete',
         );
         $row['data']['operations'] = array(
           'data' => array(
@@ -122,6 +128,8 @@ function gsb_feature_course_ct_edit_filter($form, $form_state, $subject_code = a
     $code = $subject_code['code'];
   }
 
+  $code = str_replace('x', '*', $code);
+
   $form = _gsb_feature_course_ct_get_basic_form();
 
   if ($subject != null) {
@@ -150,10 +158,45 @@ function gsb_feature_course_ct_edit_filter($form, $form_state, $subject_code = a
  * Validate the Course Filter Edit form.
  */
 function gsb_feature_course_ct_edit_filter_validate($form, &$form_state) {
+
   $code = $form_state['values']['course_code'];
+
   // Check if a code has been entered
   if ($code == '') {
     form_set_error('course_code', t('Please set a course code for the filter.'));
+  }
+
+  $error_message = _gsb_feature_course_ct_validate_code($code);
+  if (!empty($error_message)) {
+    form_set_error('course_code', t($error_message));
+  }
+    
+  /*
+  // Check if code contains *s 
+  $index = stripos($code,'*');
+  if ($index === FALSE) {
+    // no stars
+  } else {
+    // handle special stars checking
+    $test_code = str_replace('*','',$code);
+    if (strlen($test_code) == 0) {
+      // All stars is not valid
+      form_set_error('course_code', t('Course code for the filter is not valid.'));     
+      return FALSE;      
+    }
+    // Check if code is valid - 3 digits in length
+    if (!is_numeric($test_code)) {
+      // After removing the stars, the remaining chars were not numeric
+      form_set_error('course_code', t('Course code for the filter must be numeric.')); 
+      return FALSE;
+    } 
+    else if (strlen($code) != 3)  {
+      form_set_error('course_code', t('Course code for the filter must be 3 chars in length.'));  
+      return FALSE;
+    }     
+    else {
+      return;
+    }
   }
   // Check if code is valid - 3 digits in length 
   if (!is_numeric($code)) {
@@ -161,7 +204,8 @@ function gsb_feature_course_ct_edit_filter_validate($form, &$form_state) {
   } 
   else if (strlen($code) != 3)  {
     form_set_error('course_code', t('Course code for the filter must be 3 digits in length.'));
-  }  
+  } 
+  */
 }
 
 /**
@@ -322,13 +366,60 @@ function _gsb_feature_course_ct_get_subjects() {
   return $subjects;  
 }
 
+/**
+ * Validate Course Code. If error, return error message.
+ */
+function _gsb_feature_course_ct_validate_code($code) {
+
+  // Check if code contains *s 
+  $index = stripos($code,'*');
+  if ($index === FALSE) {
+    // no stars
+  } 
+  else {
+    // handle special stars checking
+    $test_code = str_replace('*','',$code);
+    if (strlen($test_code) == 0) {
+      // All stars is not valid    
+      return 'Code is invalid.';      
+    }
+    if (!is_numeric($test_code)) {
+      // After removing the stars, the remaining chars were not numeric     
+      return 'Code is invalid.'; 
+    } 
+    else if (strlen($code) != 3)  {
+      return 'Code is invalid.'; 
+    }       
+    else {
+      // No error with starred code
+      return '';     
+    }        
+  }
+
+  // Check if code is valid - 3 digits in length 
+  if (!is_numeric($code)) {
+    return 'Code is invalid.';
+  } 
+  else if (strlen($code) != 3)  {
+    return 'Code is invalid.';
+  }
+
+}
+
+/**
+ * Get Course Filters
+ */
 function _gsb_feature_course_ct_get_course_filters() {
   return variable_get('gsb_course_ct_filters', array());
 }
 
+/**
+ * Set Course Filters
+ */
 function _gsb_feature_course_ct_set_course_filters($value) {
   return variable_set('gsb_course_ct_filters', $value);
 }
+
 
 
 
