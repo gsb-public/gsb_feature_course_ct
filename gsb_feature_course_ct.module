@@ -118,20 +118,10 @@ function gsb_feature_course_ct_course_import($course) {
     $code = (string)$course->code;
 
     // don't import any courses that are in the filter list
-
-    $course_filters = _gsb_feature_course_ct_get_course_filters();
-
-    if (!empty($course_filters[$subject])) {  
-      if (in_array($code, $course_filters[$subject])) {
-        return;
-      }
+    if (_gsb_feature_course_ct_check_filter($subject, $code)) {
+      return;
     }
-    if (!empty($course_filters['ALL'])) {
-      if (in_array($code, $course_filters['ALL'])) {
-        return;
-      }
-    }    
-
+  
     // Split the year field
     $acad_year = explode('-', $course->year);
     $start_year = $acad_year[0]."-01-01";
@@ -242,5 +232,35 @@ function _gsb_feature_course_ct_add_faculty($sunet_id) {
   return $entity_ids;
 }
 
+/**
+ * Get the subject and code. 
+ * Return TRUE if in the list of courses to be filtered out.
+ */
+function _gsb_feature_course_ct_check_filter($subject, $code) {
+  
+  $course_filters = _gsb_feature_course_ct_get_course_filters();
+
+  $pattern = str_replace('*', '[0-9]{1}', $code);
+
+  if (!empty($course_filters[$subject])) {  
+    foreach ($course_filters[$subject] as $key => $code) {
+      preg_match('/'.$pattern.'/', $code, $matches);
+      if ($matches) {
+        return TRUE;
+      }
+    }
+  }
+
+  if (!empty($course_filters['ALL'])) {
+    foreach ($course_filters[$subject] as $key => $code) {
+      preg_match('/'. $pattern . '/', $code, $matches);
+      if ($matches) {
+        return TRUE;
+      }
+    }
+  }  
+
+  return FALSE;  
+}
 
 
