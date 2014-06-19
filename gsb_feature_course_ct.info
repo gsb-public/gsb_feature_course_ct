@@ -1,7 +1,7 @@
 name = GSB Feature Course CT
 core = 7.x
 package = GSB
-version = 7.x-3.2
+version = 7.x-3.3
 project = gsb_feature_course_ct
 dependencies[] = ctools
 dependencies[] = date
@@ -11,6 +11,7 @@ dependencies[] = gsb_feature_base_fields
 dependencies[] = strongarm
 dependencies[] = submit_field
 dependencies[] = text
+datestamp = 1403136937
 features[ctools][] = strongarm:strongarm:1
 features[features_api][] = api:2
 features[field_instance][] = node-course-field_body
