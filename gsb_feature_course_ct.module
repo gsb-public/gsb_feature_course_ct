@@ -124,10 +124,10 @@ function gsb_feature_course_ct_course_import($course) {
     // Split the year field
     $acad_year = explode('-', $course->year);
     $start_year = $acad_year[0]."-01-01";
-    $start_date = new DateTime($start_year);
+    $start_date = new DateTime($start_year, new DateTimeZone('America/Los_Angeles'));
 
     $end_year = $acad_year[1]."-01-01";
-    $end_date = new DateTime($end_year);
+    $end_date = new DateTime($end_year, new DateTimeZone('America/Los_Angeles'));
 
     // Check if the course already exists
     $query = new EntityFieldQuery();
@@ -261,5 +261,3 @@ function _gsb_feature_course_ct_check_filter($subject, $code) {
 
   return FALSE;  
 }
-
-
