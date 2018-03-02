@@ -10,7 +10,7 @@
 function gsb_feature_course_ct_field_default_field_instances() {
   $field_instances = array();
 
-  // Exported field_instance: 'node-course-field_body'
+  // Exported field_instance: 'node-course-field_body'.
   $field_instances['node-course-field_body'] = array(
     'bundle' => 'course',
     'custom_add_another' => '',
@@ -96,7 +96,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
     'workbench_access_field' => 0,
   );
 
-  // Exported field_instance: 'node-course-field_course_code'
+  // Exported field_instance: 'node-course-field_course_code'.
   $field_instances['node-course-field_course_code'] = array(
     'bundle' => 'course',
     'default_value' => NULL,
@@ -148,7 +148,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
     'workbench_access_field' => 0,
   );
 
-  // Exported field_instance: 'node-course-field_course_end_acad_year'
+  // Exported field_instance: 'node-course-field_course_end_acad_year'.
   $field_instances['node-course-field_course_end_acad_year'] = array(
     'bundle' => 'course',
     'deleted' => 0,
@@ -164,6 +164,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
           'multiple_from' => '',
           'multiple_number' => '',
           'multiple_to' => '',
+          'show_remaining_days' => FALSE,
           'show_repeat_rule' => 'show',
         ),
         'type' => 'date_default',
@@ -210,7 +211,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
     'workbench_access_field' => 0,
   );
 
-  // Exported field_instance: 'node-course-field_course_id'
+  // Exported field_instance: 'node-course-field_course_id'.
   $field_instances['node-course-field_course_id'] = array(
     'bundle' => 'course',
     'default_value' => NULL,
@@ -262,7 +263,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
     'workbench_access_field' => 0,
   );
 
-  // Exported field_instance: 'node-course-field_course_start_acad_year'
+  // Exported field_instance: 'node-course-field_course_start_acad_year'.
   $field_instances['node-course-field_course_start_acad_year'] = array(
     'bundle' => 'course',
     'deleted' => 0,
@@ -278,6 +279,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
           'multiple_from' => '',
           'multiple_number' => '',
           'multiple_to' => '',
+          'show_remaining_days' => FALSE,
           'show_repeat_rule' => 'show',
         ),
         'type' => 'date_default',
@@ -324,7 +326,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
     'workbench_access_field' => 0,
   );
 
-  // Exported field_instance: 'node-course-field_course_subject'
+  // Exported field_instance: 'node-course-field_course_subject'.
   $field_instances['node-course-field_course_subject'] = array(
     'bundle' => 'course',
     'default_value' => NULL,
@@ -376,7 +378,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
     'workbench_access_field' => 0,
   );
 
-  // Exported field_instance: 'node-course-field_person_fac_ref'
+  // Exported field_instance: 'node-course-field_person_fac_ref'.
   $field_instances['node-course-field_person_fac_ref'] = array(
     'bundle' => 'course',
     'default_value' => NULL,
@@ -387,6 +389,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
         'label' => 'above',
         'module' => 'entityreference',
         'settings' => array(
+          'bypass_access' => FALSE,
           'conditions' => array(),
           'link' => FALSE,
         ),
@@ -425,7 +428,7 @@ function gsb_feature_course_ct_field_default_field_instances() {
     'workbench_access_field' => 0,
   );
 
-  // Exported field_instance: 'node-course-field_submit'
+  // Exported field_instance: 'node-course-field_submit'.
   $field_instances['node-course-field_submit'] = array(
     'bundle' => 'course',
     'deleted' => 0,

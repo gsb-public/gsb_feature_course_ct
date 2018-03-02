@@ -29,6 +29,7 @@ features[variable][] = menu_parent_course
 features[variable][] = node_options_course
 features[variable][] = node_preview_course
 features[variable][] = node_submitted_course
+features[variable][] = pathauto_node_course_pattern
 features[variable][] = workbench_access_node_type_course
 features_exclude[field_base][field_course_id] = field_course_id
 features_exclude[field_base][field_course_code] = field_course_code
