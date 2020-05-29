@@ -106,6 +106,9 @@ function gsb_feature_course_ct_import_course($acad_year = NULL, $subject = 'ACCT
       gsb_feature_course_ct_course_import($course);
     }
   }
+  else {
+    watchdog('gsb_feature_course_ct', 'Error in simplexml_load_file ' . $xml);
+  }
 }
 
 /**

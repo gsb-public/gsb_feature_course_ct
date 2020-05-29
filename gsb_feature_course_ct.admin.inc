@@ -320,6 +320,7 @@ function _gsb_feature_course_ct_get_subjects() {
   $subjects = array(
     'ALL' => 'All',
     'ACCT' => 'ACCT',
+    'ALP' => 'ALP',
     'FINANCE' => 'FINANCE',
     'GSBGEN' => 'GSBGEN',
     'HRMGT' => 'HRMGT',
